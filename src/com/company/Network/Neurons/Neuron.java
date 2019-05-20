@@ -56,7 +56,7 @@ public class Neuron implements NeuronInt {
     public void adjustDeltaW(){
         double deltaW = 0.0;
         for (WeightedEdge we: back) {
-            deltaW = -WeightedEdge.n * delta * (1 - output) * output * we.getBackNeuron().getOutput();
+            deltaW = WeightedEdge.n * delta * (1 - output) * output * we.getBackNeuron().getOutput();
             we.setDeltaW(deltaW);
             we.setWeight(we.getWeight() + deltaW);
         }
