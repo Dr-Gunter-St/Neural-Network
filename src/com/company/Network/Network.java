@@ -8,6 +8,7 @@ import com.company.Training.TrainingInput;
 import com.company.Training.TrainingSet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Network {
@@ -16,7 +17,7 @@ public class Network {
     private Neuron networkEnd;
     private TrainingSet trainingSet;
 
-    public Network(TrainingSet trainingSet) {
+    public Network(TrainingSet trainingSet, int[] structure) {
         this.trainingSet = trainingSet;
 
         int inputsNum = trainingSet.getClasses().size();
@@ -34,10 +35,9 @@ public class Network {
         // IMPORTANT
         // Last neuron made for running the network
 
-        int[] struct = new int[]{5,4,3,3,1};
 
         prevLayer = inputs;
-        for (int i: struct) {
+        for (int i: structure) {
             for (int j = 0; j < i; j++) {
                 NeuronInt neuron = new Neuron();
                 for (NeuronInt n: prevLayer) {
@@ -72,14 +72,19 @@ public class Network {
         return results;
     }
 
-    public void train(){
+    public void train(boolean makeEncoder){
         List<Double> results;
         List<Double> wantedResults;
         double mistake = 0.0;
 
         for (TrainingInput ti: trainingSet.getInputs()) {
             results = this.processInput(ti);
-            wantedResults = getWantedResults(ti);
+
+            if (!makeEncoder) {
+                wantedResults = getWantedResults(ti);
+            } else {
+                wantedResults = Arrays.asList(ti.getInputs());
+            }
 
             for (int i = 0; i < results.size(); i++) {
                 mistake = Math.abs(wantedResults.get(i) - results.get(i));

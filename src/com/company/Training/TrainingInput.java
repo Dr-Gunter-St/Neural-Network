@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class TrainingInput {
 
-    private double[] inputs;
+    private Double[] inputs;
     private String className;
 
     TrainingInput(String line, TrainingSet trainingSet){
@@ -13,13 +13,13 @@ public class TrainingInput {
         this.className = values[values.length - 1];
         trainingSet.getClasses().add(className);
 
-        inputs = new double[values.length - 1];
+        inputs = new Double[values.length - 1];
         for (int i = 0; i < values.length - 1; i++) {
             inputs[i] = Double.parseDouble(values[i]);
         }
     }
 
-    public double[] getInputs() {
+    public Double[] getInputs() {
         return inputs;
     }
 

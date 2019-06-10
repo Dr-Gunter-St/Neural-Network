@@ -12,8 +12,10 @@ public class Main {
 
         TrainingSet trainingSet = new TrainingSet(Paths.get("resources\\inputs"));
 
-        Network network = new Network(trainingSet);
-        network.train();
+        int[] struct = new int[]{5,4,3,3,1};
+        Network network = new Network(trainingSet, struct);
+        network.train(false);
+
 
         System.out.println(network.processInput(trainingSet.getInputs().get(0)));
         System.out.println(network.getWantedResults(trainingSet.getInputs().get(0)));
