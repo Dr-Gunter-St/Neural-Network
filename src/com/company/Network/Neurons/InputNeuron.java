@@ -18,7 +18,7 @@ public class InputNeuron implements NeuronInt {
         return forth;
     }
 
-    public double getWeightedSum() {
+    public double processInputs() {
         return input;
     }
 

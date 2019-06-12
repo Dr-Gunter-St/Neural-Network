@@ -38,17 +38,13 @@ public class Neuron implements NeuronInt {
         idCounter++;
     }
 
-
-    public double calculateWeightedSum(){
-        back.forEach(weightedEdge -> {
-            weightedSum += weightedEdge.getWeight() * weightedEdge.getBackNeuron().getOutput();
-        });
-        return weightedSum;
-    }
-
     @Override
-        public double applySigmoid() {
-        output =  Sigmoid.sigmoid(calculateWeightedSum());
+    public double processInputs(){
+        weightedSum = 0.0;
+        back.forEach(weightedEdge -> {
+            weightedSum += weightedEdge.getWeight() * weightedEdge.getBackNeuron().processInputs();
+        });
+        output = Sigmoid.sigmoid(weightedSum);
         return output;
     }
 
@@ -56,9 +52,9 @@ public class Neuron implements NeuronInt {
     public void adjustDeltaW(){
         double deltaW = 0.0;
         for (WeightedEdge we: back) {
-            deltaW = WeightedEdge.n * delta * (1 - output) * output * we.getBackNeuron().getOutput();
+            deltaW = - WeightedEdge.n * delta * (1 - output) * output * we.getBackNeuron().getOutput();
             we.setDeltaW(deltaW);
-            we.setWeight(we.getWeight() + deltaW);
+            //we.setWeight(we.getWeight() + deltaW); // TODO: change this
         }
     }
 
@@ -68,6 +64,8 @@ public class Neuron implements NeuronInt {
 
         for (WeightedEdge we: forth) {
             delta += we.getForthNeuron().getDelta() * we.getWeight() * (1 - we.getForthNeuron().getOutput()) * we.getForthNeuron().getOutput();
+
+            we.setWeight(we.getWeight() + we.getDeltaW()); // TODO: put it here
         }
 
     }
@@ -106,12 +104,8 @@ public class Neuron implements NeuronInt {
         this.delta = delta;
     }
 
-    public void setOutput(double output) {
-        this.output = output;
-    }
-
     public double getOutput() {
-        return applySigmoid();
+        return output;
     }
 
     @Override
@@ -148,11 +142,15 @@ public class Neuron implements NeuronInt {
 
     @Override
     public String toString() {
-        return "Neuron{" +
+        String s =  "Neuron{" +
                 " id=" + id +
-                ", weightedSum=" + weightedSum +
-                ", delta=" + delta +
-                ", output=" + output +
-                '}';
+                " delta=" + delta +
+                ", weightedSum=" + weightedSum + "     |";
+
+        for (WeightedEdge we: forth) {
+            s = s + we.getWeight() + " | ";
+        }
+
+        return s + "\n";
     }
 }

@@ -20,7 +20,7 @@ public class Network {
     public Network(TrainingSet trainingSet, int[] structure) {
         this.trainingSet = trainingSet;
 
-        int inputsNum = trainingSet.getClasses().size();
+        int inputsNum = trainingSet.getInputs().get(0).getInputs().length;
         inputs = new ArrayList<>(inputsNum);
 
         for (int i = 0; i < inputsNum; i++) {
@@ -41,8 +41,9 @@ public class Network {
             for (int j = 0; j < i; j++) {
                 NeuronInt neuron = new Neuron();
                 for (NeuronInt n: prevLayer) {
-                    n.getForth().add(new WeightedEdge(n, neuron));
-                    neuron.getBack().add(new WeightedEdge(n, neuron));
+                    WeightedEdge we = new WeightedEdge(n, neuron);
+                    n.getForth().add(we);
+                    neuron.getBack().add(we);
                 }
                 thisLayer.add(neuron);
                 networkEnd = (Neuron) neuron;
@@ -64,7 +65,7 @@ public class Network {
             inputs.get(i).setInput(inputToProcess.getInputs()[i]);
         }
 
-        networkEnd.calculateWeightedSum();
+        networkEnd.processInputs();
 
         for (WeightedEdge we: networkEnd.getBack()) {
             results.add(we.getBackNeuron().getOutput());
@@ -75,7 +76,6 @@ public class Network {
     public void train(boolean makeEncoder){
         List<Double> results;
         List<Double> wantedResults;
-        double mistake = 0.0;
 
         for (TrainingInput ti: trainingSet.getInputs()) {
             results = this.processInput(ti);
@@ -86,18 +86,8 @@ public class Network {
                 wantedResults = Arrays.asList(ti.getInputs());
             }
 
-            for (int i = 0; i < results.size(); i++) {
-                mistake = Math.abs(wantedResults.get(i) - results.get(i));
-            }
+            this.backpropagate(results, wantedResults);
 
-            // PERFECT WORLD
-            /*while (mistake > 0.1){
-                mistake = this.backpropagate(results, wantedResults);
-            }*/
-
-            for (int i = 0; i < 100; i++) {
-                this.backpropagate(results, wantedResults);
-            }
         }
     }
 
@@ -162,6 +152,44 @@ public class Network {
 
     }
 
+    public void testTraining(){
+
+        List<Double> results;
+        List<Double> wantedResults;
+        int correctRes = trainingSet.getInputs().size();
+
+        for (TrainingInput input: trainingSet.getInputs()) {
+            results = this.processInput(input);
+            wantedResults = this.getWantedResults(input);
+
+            for (int i = 0; i < results.size(); i++) {
+                if (Math.abs(wantedResults.get(i) - results.get(i)) > 0.05 ){
+                    correctRes--;
+                    break;
+                }
+            }
+        }
+
+        System.out.println((double)correctRes/(double)trainingSet.getInputs().size());
+    }
+
+    public double getError(){
+        double error = 0.0;
+        List<Double> results;
+        List<Double> wantedResults;
+
+        for (int i = 0; i < trainingSet.getInputs().size(); i++) {
+            results = processInput(trainingSet.getInputs().get(i));
+            wantedResults = getWantedResults(trainingSet.getInputs().get(i));
+
+            for (int j = 0; j < results.size(); j++) {
+                error += (wantedResults.get(j) - results.get(j))*(wantedResults.get(j) - results.get(j))/2.0;
+            }
+        }
+
+        return error/(double) trainingSet.getInputs().size();
+    }
+
     @Override
     public String toString() {
         String res = "Network{ \n";
@@ -174,7 +202,7 @@ public class Network {
             nextLayer = new ArrayList<>();
 
             for (NeuronInt n : thisLayer) {
-                res += n.toString();
+                res += n.toString() + "\n";
             }
             res += "////////////////////////\n";
             for (WeightedEdge we: thisLayer.get(0).getForth()) {

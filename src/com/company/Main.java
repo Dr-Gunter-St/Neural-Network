@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.Network.Network;
+import com.company.Network.Neurons.Sigmoid;
 import com.company.Training.TrainingSet;
 
 import java.nio.file.Paths;
@@ -10,15 +11,18 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TrainingSet trainingSet = new TrainingSet(Paths.get("resources\\inputs"));
+       TrainingSet trainingSet = new TrainingSet(Paths.get("resources\\inputs"));
 
         int[] struct = new int[]{5,4,3,3,1};
         Network network = new Network(trainingSet, struct);
-        network.train(false);
 
+        for (int i = 0; i < 10000; i++) {
+            network.train(false);
 
-        System.out.println(network.processInput(trainingSet.getInputs().get(0)));
-        System.out.println(network.getWantedResults(trainingSet.getInputs().get(0)));
+            if (i%100 == 0){
+                System.out.println(network.getError());
+            }
+        }
 
     }
 }

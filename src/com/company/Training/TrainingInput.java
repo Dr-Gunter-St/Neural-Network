@@ -1,6 +1,7 @@
 package com.company.Training;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class TrainingInput {
 
@@ -11,7 +12,6 @@ public class TrainingInput {
 
         String[] values = line.split(",");
         this.className = values[values.length - 1];
-        trainingSet.getClasses().add(className);
 
         inputs = new Double[values.length - 1];
         for (int i = 0; i < values.length - 1; i++) {

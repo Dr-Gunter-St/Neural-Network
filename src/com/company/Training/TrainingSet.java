@@ -5,20 +5,20 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TrainingSet {
 
     private List<TrainingInput> inputs;
-    private Set<String> classes;
+    private List<String> classes;
 
     public TrainingSet(Path file){
 
         inputs = new ArrayList<>();
-        classes = new HashSet<>();
+        classes = new ArrayList<>();
+        classes.add("Iris-setosa");
+        classes.add("Iris-versicolor");
+        classes.add("Iris-virginica");
 
         Charset charset = Charset.forName("US-ASCII");
         try (BufferedReader reader = Files.newBufferedReader(file, charset)) {
@@ -31,13 +31,16 @@ public class TrainingSet {
             System.err.format("IOException: %s%n", x);
         }
 
+        normalize();
+        Collections.shuffle(inputs);
+
     }
 
     public List<TrainingInput> getInputs() {
         return inputs;
     }
 
-    public Set<String> getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 

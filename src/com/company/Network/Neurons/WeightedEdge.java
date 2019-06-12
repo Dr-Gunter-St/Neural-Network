@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class WeightedEdge {
 
-    public static final double n = 0.2;
+    public static final double n = -0.2;
 
     private NeuronInt forthNeuron;
     private NeuronInt backNeuron;
@@ -18,9 +18,9 @@ public class WeightedEdge {
         this.backNeuron = backNeuron;
 
         Random random = new Random();
-        this.weight = random.nextDouble() % 0.1;
+        this.weight = random.nextDouble();
 
-        if (!random.nextBoolean()) this.weight = -this.weight;
+        //if (!random.nextBoolean()) this.weight = -this.weight;
 
         this.deltaW = 0.0;
     }

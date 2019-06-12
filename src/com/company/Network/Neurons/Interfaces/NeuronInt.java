@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NeuronInt {
 
-    double getWeightedSum();
+    double processInputs();
 
     double getOutput();
 
@@ -19,10 +19,6 @@ public interface NeuronInt {
     }
 
     default void setInput(double input){}
-
-    default double applySigmoid(){
-        return 0;
-    };
 
     default void setDelta(double d){}
 
